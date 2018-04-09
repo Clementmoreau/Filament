@@ -1,6 +1,6 @@
 % Matrix for the 2-filament bundle
 
-function M=M_bundle(t,z,N)
+function M=matrixNparam_bundle(t,z,N)
 
 global gamma Sp 
 
