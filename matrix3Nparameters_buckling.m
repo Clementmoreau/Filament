@@ -1,5 +1,5 @@
-function M=matrix3Nparameters_buckling(t,z,N)
-global gamma Sp LL
+function M=matrix3Nparameters_buckling(t,z,N,Sp)
+global gamma
 
 x=z(1:N);
 y=z(N+1:2*N);
