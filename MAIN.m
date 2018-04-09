@@ -1,5 +1,6 @@
-%% Main function: integrating the dynamics equation of a N-link elastic microswimmer
-% Returns N+2 parameters : 
+%% Main function: integrating the dynamics equation of an elastic microfilament
+
+%  Returns N+2 parameters for each time : 
 %   x and y are the coordinates of the end of the first link
 %   theta is the orientation of the first link
 %   alpha2 to alphaN are the 'shape angles' : angle between i+1-th and i-th
@@ -17,7 +18,7 @@ Sp_c=4;
 Sp=(Sp_c/N)^(4/3); %sperm number characterizing the 'floppiness' of the filament - Sp=L*(zeta*omega/kappa)^(1/3) 
 gamma=1/2; %ratio between the hydrodynamics drag coefficients - gamma = xi/eta
 
-%magnetic fields
+% magnetic fields
 Hx=@(t) 0;%100;
 Hy=@(t) 0;%1000*cos(t/10);
 Hp=@(z,t) 0;%cos(z(3))*Hx(t)+sin(z(3))*Hy(t);
@@ -28,17 +29,10 @@ Ho=@(z,t) 0;%-sin(z(3))*Hx(t)+cos(z(3))*Hy(t);
 % straight line
 z0=zeros(N+2,1);
 
-% "fake" straight line for buckling
-% p=randi([2 N-1]);
-% s=rand;
-% absbias=1e-3;
-% bias=absbias*(s>1/2)-absbias*(s<=1/2);
-% z0=[zeros(p,1);bias;-2*bias;bias;zeros(N-p-1,1);0;0;0;0];
-
 % half-circle
 % z0=[N/(2*pi);0;-pi/2-pi/(2*N);-pi/(N)*ones(N-1,1)];
 
-%quarter of a circle
+% quarter of a circle
 % TT=[pi/(2*(N+1)):pi/(2*(N+1)):pi/2-pi/(2*(N+1))];
 % x0=N*cos(TT-pi/(2*(N+1)));
 % y0=N*sin(TT-pi/(2*(N+1)));
@@ -53,8 +47,8 @@ z0=zeros(N+2,1);
 % T=1e-2;
 % Nt=5000;
 % dt=T/Nt;
-T=8*pi;%resolution time
-tps=linspace(0,T,800);
+T=8*pi; %final time
+tps=linspace(0,T,800); %time step
 
 %% Solving procedure
 dZ=@(t,z) second_member_Nparam(t,z,N);
@@ -70,7 +64,6 @@ figure(1)
 hold on
 col=colormap(jet(106));
 A=[];
-%COL=[0.1 0.8 0.4;0.3 0.7 0.4;0.5 0.6 0.4;0.7 0.5 0.4;0.7 0.4 0.5;0.9 0.3 0.5]; 
 for i=length(tps)-150:15:length(tps)-45
     [X,Y,TH]=coordinates_swimmerN(traj(i,:),N);
     plot(X(1:end-1),Y(1:end-1),'--','LineWidth',2,'Color',col(i-(length(tps)-151),:))
@@ -137,77 +130,3 @@ set(gca,'FontSize',28)
 % plot(tps(1:300),TC(1:300))
 % xlabel('time')
 % ylabel('TC')
-
-
-
-% v=VideoWriter('Relaxation_50.avi');
-% open(v);
-% writeVideo(v,M);
-% close(v);
-%% Movie
-% figure;
-% for i = 1:length(tps)
-%     [X,Y,TH]=coordinates_swimmerN(traj(i,:),N);
-% 
-%     plot(X,Y,'k','LineWidth',0.5)
-%     axis([0 1 -0.2 0.2])
-%     title(['T = ',num2str(tps(i))]);
-% 
-%     % Store the frame
-%     M(i)=getframe(gcf); % leaving gcf out crops the frame in the movie.
-% end
-% 
-% v=VideoWriter('BucklingSp2.avi');
-% open(v);
-% writeVideo(v,M);
-% close(v);
-%% bin
-% figure(2)
-% clf
-% plot(tps,traj(:,N+3),tps,traj(:,N+4),tps,traj(:,end-1),tps,traj(:,end))
-% legend('F1x','F1y','FNx','FNy')
-
-% %parameters
-% %longueur des segments
-% Ltot=1000;
-% LL=2*100*sin(pi/2/N)*ones(1,N);
-% 
-% %magnetizations
-% Mag=[0.5*ones(1,N)];
-% 
-% %coeff. hydrodynamiques
-% Eta=12.4e-2*ones(1,N);
-% Xi=6.2e-2*ones(1,N);
-% gamma=Xi(1)/Eta(1);
-% 
-% 
-% %raideurs des ressorts
-% k=-83000;
-% 
-% %frequency
-% 
-% %Sperm number
-% Sp=LL(1)*(omega*Eta(1)/k)^(1/3);
-
-% 3N parameters
-% xcen=zeros(1,length(tps));
-% ycen=zeros(1,length(tps));
-% for i=1:length(tps)
-% %     xcen(i)=sum(traj(i,1:N)+cos(traj(i,2*N+1:3*N))/2)/N;
-% %     ycen(i)=sum(traj(i,N+1:2*N)+sin(traj(i,2*N+1:3*N))/2)/N;
-%     figure(2)
-%     clf
-%     plot([traj(i,1:N),traj(i,N)+cos(traj(i,3*N))/N],[traj(i,N+1:2*N),traj(i,2*N)+sin(traj(i,3*N))/N],'k','LineWidth',3)
-% %     hold on
-% %     plot(xcen(1:i),ycen(1:i))
-%     axis equal 
-%     drawnow
-% end
-%3N param
-% TT=[pi/(2*N):pi/(N):pi-pi/(2*N)];
-% x0=cos(TT-pi/(2*N));
-% y0=sin(TT-pi/(2*N));
-% t0=pi/2+TT;
-% z0=[x0';y0';t0'];
-% theta0=pi/10;
-% z0=[0:N-2,N-2+cos(theta0),zeros(1,N-1),sin(theta0),zeros(1,N-1),theta0]';
