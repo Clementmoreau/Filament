@@ -1,4 +1,4 @@
-function M=matrixNparam_buckling2(t,z,N,Sp)
+function M=matrixNparam_buckling(t,z,N,Sp)
 
 z3=zeros(3*N,1);
 z3(1)=z(1);
