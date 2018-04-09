@@ -17,12 +17,6 @@ Sp_c=2;
 Sp=(Sp_c/N)^(4/3); %sperm number characterizing the 'floppiness' of the filament - Sp=L*(zeta*omega/kappa)^(1/3) 
 gamma=1/2; %ratio between the hydrodynamics drag coefficients - gamma = xi/eta
 
-%magnetic fields
-Hx=@(t) 1e-3;%100;
-Hy=@(t) 1e-2*cos(t);%1000*cos(t/10);
-Hp=@(z,t) 0;
-Ho=@(z,t) 0;
-
 %% initial condition
 
 % straight line
