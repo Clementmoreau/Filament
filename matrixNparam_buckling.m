@@ -10,7 +10,7 @@ for i=2:N
     z3(N+i)=z3(N+i-1)+sin(z3(2*N+i-1));
 end
 
-M3=matrix3Nparameters_buckling2(t,z3,N,Sp);
+M3=matrix3Nparameters_buckling(t,z3,N,Sp);
 
 C1=zeros(N,N);C2=zeros(N,N);C3=zeros(N,N);
 for i=1:N
