@@ -1,5 +1,7 @@
 # Filament
 
+This set of files is provided as supplementary material to the article "The asymptotic coarse-graining formulation of slender-rods, bio-filaments and flagella", to be published in Journal of the Royal Society Interface, authored by C. Moreau, L. Giraldi, and H. Gadêlha.
+
 These files can be run on MATLAB in order to simulate the behaviour of an elastic filament in a fluid at low Reynolds number.
 
 How to use it :
