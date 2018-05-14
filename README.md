@@ -21,8 +21,8 @@ You can change the name of the solving function (line 54) to study different phe
 
 Other MAIN files :
 
-MAIN_buckling : buckling phenomenon with different initial conditions
-MAIN_bundle : simulation for a double filament with springs linking them
+- MAIN_buckling : buckling phenomenon with different initial conditions
+- MAIN_bundle : simulation for a double filament with springs linking them
 
 If any questions contact me at clement dot moreau at inria dot fr
 
