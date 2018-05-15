@@ -1,3 +1,5 @@
+% This function computes the value of \dot{X} at time t by computing A, Q and B from Eq. (17)
+
 function B=second_member_Nparam(t,z,N)
 
 th=zeros(N,1);
