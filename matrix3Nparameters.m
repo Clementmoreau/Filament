@@ -1,6 +1,6 @@
 % This function fills the matrix defined as A in the text 
 % (see Appendix VII-C, equation (20) and following)
-
+% and returns Sp^4 * A
 
 function M=matrix3Nparameters(t,z,N)
 global gamma Sp
