@@ -1,3 +1,7 @@
+% This function fills the matrix Q as defined in the text
+% (see Appendix VII-B and C, equation (19) and (20))
+% and returns the product Sp^4*A*Q
+
 function M=matrixNparam(t,z,N)
 
 z3=zeros(3*N,1);
@@ -31,14 +35,6 @@ end
 C=[ones(N,1),zeros(N,1),C1;zeros(N,1),ones(N,1),C2;zeros(N,2),C3];
 M=M3*C;
 
-% bundle
- M(1,:)=[1,zeros(1,N+1)];
- M(2,:)=[0,1,zeros(1,N)];
- M(3,:)=[0,0,1,zeros(1,N-1)];
- 
-% %buckling
-%  M(1,:)=[0,1,zeros(1,N)];
-%  M(2,:)=[0,1,C2(N,:)+sin(z3(3*N))*ones(1,N)];
 end
 
         
