@@ -1,4 +1,5 @@
-% This function computes the value of \dot{X} at time t by computing A, Q and B from Eq. (17)
+% This function computes the value of \dot{X} at time t by computing A, Q and B from Eq. (20)
+% see Appendix VII-C, Eq. (20)
 
 function B=second_member_Nparam(t,z,N)
 
@@ -16,11 +17,14 @@ for i=N-2:-1:0
     B1(3+i)=(th(i+2)-th(i+1));
 end
 
- B1(3)=a0p;
-% B1(3)=0;
+B1(3)=0;
 
 BB=B1;
+
+% call to the function that computes Sp^4*A*Q
 M=matrixNparam(t,z,N);
+
+% solving the linear system
 B=M\BB;
 
 end
