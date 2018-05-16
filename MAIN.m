@@ -27,7 +27,7 @@ gamma=1/2; % ratio between the hydrodynamics drag coefficients - gamma = xi/eta
 % ---- Choose initial condition (uncomment the required one)
 
 % (1) Straight line
-z0=zeros(N+2,1);
+ z0=zeros(N+2,1);
 
 % (2) Half-circle
 % z0=[N/(2*pi);0;-pi/2-pi/(2*N);-pi/(N)*ones(N-1,1)];
@@ -37,27 +37,29 @@ z0=zeros(N+2,1);
 % z0=[x(1),y(1),th(1),th(2:end)-th(1:end-1)];
 
 % ---- Choose final time and time step
-T=8*pi; %final time
-tps=linspace(0,T,800); %time step
+T=8; %final time
+tps=linspace(0,T,200); %time step
 
 % ---- Choose a function 1, 2 or 3 (uncomment the required section)
 
 % (1) relaxation is for the standard nonmagnetised case (section IV)
-dZ=@(t,z) relaxation(t,z,N);
+% in that case start from a non straight configuration
+ dZ=@(t,z) relaxation(t,z,N);
 % ***********
 
 % (2) oscillation is for the standard case with a pinned end and angular actuation
 % % ---- Choose an angular amplitude in rad
-% amp=0.2*pi;
+% amp=0.5*pi;
 % dZ=@(t,z) oscillation(t,z,N,amp);
 % ************
 
 % (3) magnetism is for the magnetised case (section V-B)
-% % ---- Choose a magnetisation for the filament (N values)
-% Mag=[zeros(1,3*N/4),ones(1,N/4)]; 
-% % ---- Choose time-varying magnetic fields Hx and Hy (see section V-B; example in comments)
-% Hx=@(t) 0; %100;
-% Hy=@(t) 0; %1000*cos(t/10);
+% ---- Choose a magnetisation for the filament (N values)
+% Mag=[ones(1,N/4),zeros(1,3*N/4)]; 
+% % ---- Choose time-varying magnetic fields Hx and Hy (see section V-B)
+% (I recommend not to use fields with absolute value greater than 1)
+% Hx=@(t) 0;
+% Hy=@(t) 0.03*cos(t*10);
 % dZ=@(t,z) magnetism(t,z,N,Mag,Hx,Hy);
 % ************
 
@@ -67,7 +69,7 @@ dZ=@(t,z) relaxation(t,z,N);
 % ---- Graphic visualisation 
 figure;
 for i = 1:length(tps)
-     [X,Y,TH]=coordinates_swimmer(traj(i,:),N);
+     [X,Y,TH]=coordinates_filament(traj(i,:),N);
      plot(X,Y,'k','LineWidth',0.5)
      axis([-1 1 -1 1])
      title(['T = ',num2str(tps(i))]);
@@ -256,6 +258,7 @@ M=M3(1:N+2,:)*C;
 
 M(1,:)=[1,zeros(1,N+1)];
 M(2,:)=[0,1,zeros(1,N)];
+M(3,:)=[0,0,1,zeros(1,N-1)];
 end
 
 % **************************************
