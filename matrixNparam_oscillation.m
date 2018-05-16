@@ -1,3 +1,6 @@
+% This function is similar to matrixNparam but in the 
+% case of a pinned proximal end with a forced angular actuation.
+
 function  M=matrixNparam_oscillation(t,z,N)
 
 z3=zeros(3*N,1);
@@ -30,6 +33,10 @@ for i=N:-1:3
 end
 C=[ones(N,1),zeros(N,1),C1;zeros(N,1),ones(N,1),C2;zeros(N,2),C3];
 M=M3(1:N+2,:)*C;
+
+% --- this is where the first two equations are being changed to 
+% implement the pinned proximal end
+
 M(1,:)=[1,zeros(1,N+1)];
 M(2,:)=[0,1,zeros(1,N)];
 end
