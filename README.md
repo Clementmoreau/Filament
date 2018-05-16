@@ -13,7 +13,7 @@ MAIN file : choose
 - an initial shape for the filament
 - if using second_member_mag, choose a time-varying magnetic field
 
-The code solves the dynamics and returns a few plots to visualise it.
+The code solves the dynamics and returns the time (time) and state (traj) vectors.
 
 You can change the name of the solving function (line 54) to study different phenomenons:
 - second_member_Nparam : standard free ends evolution
