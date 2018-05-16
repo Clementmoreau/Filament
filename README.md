@@ -17,7 +17,7 @@ MAIN file : choose
 The code solves the dynamics and returns the time (time) and state (traj) vectors.
 A graphic visualisation starts at the end. 
 
-A few movies that show what can be done with the code are provided.
+A few movies that show what can be done with the code (and a little more graphic cosmetics) are provided.
 
 If any questions contact me at clement dot moreau at inria dot fr
 
