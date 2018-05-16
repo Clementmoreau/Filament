@@ -1,3 +1,10 @@
+% This function computes the '3N coordinates' -- X_3N in the text
+% from the 'N+2 coordinates' -- X in the text 
+
+% --- input : N+2 coordinates, number of links N
+% --- output : X, Y coordinates of the N links
+% TH orientation of each link
+
 function [X,Y,TH]=coordinates_swimmerN(z,N)
 
 X=zeros(N+1,1);
