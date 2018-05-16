@@ -1,3 +1,7 @@
+% This function fills the matrix defined as A in the text 
+% (see Appendix VII-C, equation (20) and following)
+
+
 function M=matrix3Nparameters(t,z,N)
 global gamma Sp
 
@@ -6,7 +10,6 @@ y=z(N+1:2*N);
 th=z(2*N+1:3*N);
 F=zeros(2,3*N);
 T=zeros(N,3*N);
-C=zeros(2*(N-1),3*N);
 
 for i=1:N
     u=cos(th(i));
@@ -40,16 +43,6 @@ for i=1:N
 end
 
 T=Sp^3*T;
-
-% for i=1:N-1
-%     C(i,i)=-1;
-%     C(N-1+i,N+i)=-1;
-%     C(i,2*N+i)=sin(th(i));
-%     C(N-1+i,2*N+i)=-cos(th(i));
-%     C(i,i+1)=1;
-%     C(N-1+i,N+i+1)=1;
-% end
-
 
 M=[F;T];
 end
