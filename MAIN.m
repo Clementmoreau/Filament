@@ -131,10 +131,7 @@ B1=zeros(N+2,1);
 B1(N+2)=(th(N+1)-th(N));
 
 % for forced angular actuation
-% --- Choose an amplitude amp in rad
-amp=0.28*pi;
 a0p=amp*cos(t);
-a0=amp*sin(t);
 
 for i=N-2:-1:0
     B1(3+i)=(th(i+2)-th(i+1));
@@ -412,9 +409,4 @@ TH=atan((Y(2:end)-Y(1:end-1))./(X(2:end)-X(1:end-1)));
 l=f(X(1),X(2));
 X=X/(l);
 Y=Y/(l);
-
-
-% figure;
-% plot(X,Y)
-
 end
