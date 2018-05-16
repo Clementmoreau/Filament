@@ -1,71 +1,92 @@
 % *******************************************
 % Main function: integrating the dynamics equation of an elastic microfilament
 % *******************************************
-
 %  References to the original paper are given throughout the code
 %
 %  Returns N+2 parameters for each time (contained in the 'traj' array) : 
-%   x and y are the coordinates of the end of the first link
-%   theta is the orientation of the first link
-%   alpha2 to alphaN are the 'shape angles' : angle between i+1-th and i-th link
+%   * x and y are the coordinates of the end of the first link
+%   * theta is the orientation of the first link
+%   * alpha2 to alphaN are the 'shape angles' : angle between i+1-th and i-th link
 %  See Fig.1 
-
-% -----------------
+% *******************************************
+%
 clear all;
 
 % ---- Choose number of links
 N=40;
 
-% Adimensionalizing parameters
-global Hp Ho gamma Sp
+% Declaring global parameters
+global gamma Sp
 
 % ---- Choose 'sperm number' characterizing the 'floppiness' of the filament - Sp=L*(zeta*omega/kappa)^(1/4)
+% typically between 2 and 16, see Eq. (5)
 Sp_c=4;
-
 Sp=(Sp_c/N)^(4/3);
 gamma=1/2; % ratio between the hydrodynamics drag coefficients - gamma = xi/eta
 
-% ---- Choose magnetic fields if relevant (see section V-B; example in comments)
-Hx=@(t) 0; %100;
-Hy=@(t) 0; %1000*cos(t/10);
-Hp=@(z,t) cos(z(3))*Hx(t)+sin(z(3))*Hy(t);
-Ho=@(z,t) -sin(z(3))*Hx(t)+cos(z(3))*Hy(t);
-
 % ---- Choose initial condition (uncomment the required one)
 
-% Straight line
+% (1) Straight line
 z0=zeros(N+2,1);
 
-% Half-circle
+% (2) Half-circle
 % z0=[N/(2*pi);0;-pi/2-pi/(2*N);-pi/(N)*ones(N-1,1)];
 
-% Parabola arc
-% [x,y,th]=coord_parabola(N,-2,2);
+% (3) Parabola arc
+% [x,y,th]=coordinates_parabola(N,-2,2);
 % z0=[x(1),y(1),th(1),th(2:end)-th(1:end-1)];
 
 % ---- Choose final time and time step
 T=8*pi; %final time
 tps=linspace(0,T,800); %time step
 
-% ---- Solving procedure
-% ---- Choose a function 
-%   * second_member_Nparam is for the standard nonmagnetised case (section IV)
-%   * second_member_
-%   *
-dZ=@(t,z) second_member_Nparam(t,z,N);
-% tic
+% ---- Choose a function 1, 2 or 3 (uncomment the required section)
+
+% (1) relaxation is for the standard nonmagnetised case (section IV)
+dZ=@(t,z) relaxation(t,z,N);
+% ***********
+
+% (2) oscillation is for the standard case with a pinned end and angular actuation
+% % ---- Choose an angular amplitude in rad
+% amp=0.2*pi;
+% dZ=@(t,z) oscillation(t,z,N,amp);
+% ************
+
+% (3) magnetism is for the magnetised case (section V-B)
+% % ---- Choose a magnetisation for the filament (N values)
+% Mag=[zeros(1,3*N/4),ones(1,N/4)]; 
+% % ---- Choose time-varying magnetic fields Hx and Hy (see section V-B; example in comments)
+% Hx=@(t) 0; %100;
+% Hy=@(t) 0; %1000*cos(t/10);
+% dZ=@(t,z) magnetism(t,z,N,Mag,Hx,Hy);
+% ************
+
+% ---- SOLVING
 [tps,traj]=ode15s(dZ,tps,z0);
-% toc
 
 % ---- Graphic visualisation 
 figure;
+for i = 1:length(tps)
+     [X,Y,TH]=coordinates_swimmer(traj(i,:),N);
+     plot(X,Y,'k','LineWidth',0.5)
+     axis([-1 1 -1 1])
+     title(['T = ',num2str(tps(i))]);
+     drawnow
+end
 
 % *********** END OF MAIN SCRIPT ***********
 % ***** SUMMARY OF FOLLOWING FUNCTIONS *****
+% relaxation
+% oscillation
+% magnetism
+% matrixNparam
+% matrixNparam_oscillation
+% matrix3Nparameters
+% coordinates_filament
+% coordinates_parabola
+% *******************************************
 
-
-% **************************************
-function B=second_member_Nparam(t,z,N)
+function B=relaxation(t,z,N)
 % This function computes the value of \dot{X} at time t by computing A, Q and B from Eq. (20)
 % see Appendix VII-C, Eq. (20)
 
@@ -96,7 +117,7 @@ B=M\BB;
 end
 
 % **************************************
-function B=second_member_Nparam_oscillation(t,z,N)
+function B=oscillation(t,z,N,amp)
 % This function solves the linear system (20)
 % from Appendix VII-C in the case of a pinned end with a forced
 % angular actuation
@@ -127,15 +148,11 @@ B=M\B1;
 end
 
 % **************************************
-function B=second_member_mag(t,z,N,Mag)
+function B=magnetism(t,z,N,Mag,Hx,Hy)
 % This function is similar to second_member, but with the magnetic effects added
 % (see Appendix VII-E, Eq. 24)
 % Hx and Hy are the external magnetic fields, defined in the MAIN file.
 
-global Ho Hp Hx Hy
-
-% --- Choose a magnetisation
-Mag=[zeros(1,3*N/4),ones(1,N/4)];
 th=zeros(N+1,1);
 th(2)=z(3);
 for i=3:N+1
@@ -295,7 +312,7 @@ M=[F;T];
 end
 
 % **************************************
-function [X,Y,TH]=coordinates_swimmerN(z,N)
+function [X,Y,TH]=coordinates_filament(z,N)
 % This function computes the '3N coordinates' -- X_3N in the text
 % from the 'N+2 coordinates' -- X in the text 
 
@@ -325,10 +342,11 @@ Y=Y/N;
 end
 
 % **************************************
-function [X,Y,TH]=coord_parabola(N,x1,x2)
+function [X,Y,TH]=coordinates_parabola(N,x1,x2)
 % This function computes the coordinates of N links of constant length on a parabola y=x^2 arc
 % between x=x1 and x=x2
 % normalized at the end such that total length=N
+% Used for the parabola initial condition
 
 F=@(x) (x*sqrt(1+x^2)+log(x+sqrt(1+x^2)))/2;
 f=@(xa,xb) abs(xa-xb)*sqrt(1+(xa+xb)^2);
