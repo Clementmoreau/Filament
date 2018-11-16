@@ -20,8 +20,7 @@ global gamma Sp
 
 % ---- Choose 'sperm number' characterizing the 'floppiness' of the filament - Sp=L*(zeta*omega/kappa)^(1/4)
 % typically between 2 and 16, see Eq. (5)
-Sp_c=4;
-Sp=(Sp_c/N)^(4/3);
+Sp=2;
 gamma=1/2; % ratio between the hydrodynamics drag coefficients - gamma = xi/eta
 
 % ---- Choose initial condition (uncomment the required one)
@@ -30,21 +29,21 @@ gamma=1/2; % ratio between the hydrodynamics drag coefficients - gamma = xi/eta
  z0=zeros(N+2,1);
 
 % (2) Half-circle
-% z0=[N/(2*pi);0;-pi/2-pi/(2*N);-pi/(N)*ones(N-1,1)];
+% z0=[1/(2*pi);0;-pi/2-pi/(2*N);-pi/(N)*ones(N-1,1)];
 
 % (3) Parabola arc
 % [x,y,th]=coordinates_parabola(N,-2,2);
 % z0=[x(1),y(1),th(1),th(2:end)-th(1:end-1)];
 
 % ---- Choose final time and time step
-T=8; %final time
+T=15; %final time
 tps=linspace(0,T,200); %time step
 
 % ---- Choose a function 1, 2 or 3 (uncomment the required section)
 
 % (1) relaxation is for the standard nonmagnetised case (section IV)
 % in that case start from a non straight configuration
- dZ=@(t,z) relaxation(t,z,N);
+% dZ=@(t,z) relaxation(t,z,N);
 % ***********
 
 % (2) oscillation is for the standard case with a pinned end and angular actuation
@@ -55,12 +54,12 @@ tps=linspace(0,T,200); %time step
 
 % (3) magnetism is for the magnetised case (section V-B)
 % ---- Choose a magnetisation for the filament (N values)
-% Mag=[ones(1,N/4),zeros(1,3*N/4)]; 
-% % ---- Choose time-varying magnetic fields Hx and Hy (see section V-B)
+Mag=[ones(1,N/4),zeros(1,3*N/4)]; 
+% ---- Choose time-varying magnetic fields Hx and Hy (see section V-B)
 % (I recommend not to use fields with absolute value greater than 1)
-% Hx=@(t) 0;
-% Hy=@(t) 0.03*cos(t*10);
-% dZ=@(t,z) magnetism(t,z,N,Mag,Hx,Hy);
+Hx=@(t) 0;
+Hy=@(t) 1*cos(t);
+dZ=@(t,z) magnetism(t,z,N,Mag,Hx,Hy);
 % ************
 
 % ---- SOLVING
@@ -101,9 +100,9 @@ th(2)=z(3);
 
 B1=zeros(N+2,1);
 
-B1(N+2)=(th(N+1)-th(N));
+B1(N+2)=N*(th(N+1)-th(N));
 for i=N-2:-1:0
-    B1(3+i)=(th(i+2)-th(i+1));
+    B1(3+i)=N*(th(i+2)-th(i+1));
 end
 
 B1(3)=0;
@@ -130,13 +129,13 @@ for i=3:N+1
     th(i)=th(i-1)+z(i+1);
 end
 B1=zeros(N+2,1);
-B1(N+2)=(th(N+1)-th(N));
+B1(N+2)=N*(th(N+1)-th(N));
 
 % for forced angular actuation
 a0p=amp*cos(t);
 
 for i=N-2:-1:0
-    B1(3+i)=(th(i+2)-th(i+1));
+    B1(3+i)=N*(th(i+2)-th(i+1));
 end
 
 B1(3)=a0p;
@@ -160,13 +159,13 @@ end
 B1=zeros(N+2,1);
 B2=zeros(N+2,1);
 B3=zeros(N+2,1);
-B1(N+2)=(th(N+1)-th(N));
+B1(N+2)=N*(th(N+1)-th(N));
 
 % adding the magnetic effects 
 B2(N+2)=-Mag(N)*sin(th(N));
 B3(N+2)=Mag(N)*cos(th(N));
 for i=N-2:-1:0
-    B1(3+i)=(th(i+2)-th(i+1));
+    B1(3+i)=N*(th(i+2)-th(i+1));
     B2(3+i)=B2(3+i+1)-Mag(i+1)*sin(th(i+2));
     B3(3+i)=B3(3+i+1)+Mag(i+1)*cos(th(i+2));
 end
@@ -190,8 +189,8 @@ z3(N+1)=z(2);
 z3(2*N+1)=z(3);
 for i=2:N
     z3(2*N+i)=z3(2*N+i-1)+z(i+2);
-    z3(i)=z3(i-1)+cos(z3(2*N+i-1));
-    z3(N+i)=z3(N+i-1)+sin(z3(2*N+i-1));
+    z3(i)=z3(i-1)+cos(z3(2*N+i-1))/N;
+    z3(N+i)=z3(N+i-1)+sin(z3(2*N+i-1))/N;
 end
 
 M3=matrix3Nparameters(t,z3,N);
@@ -212,7 +211,7 @@ for i=N:-1:3
         C2(i,j)=C2(i,j+1)+cos(z3(2*N+j));
     end
 end
-C=[ones(N,1),zeros(N,1),C1;zeros(N,1),ones(N,1),C2;zeros(N,2),C3];
+C=[ones(N,1),zeros(N,1),C1/N;zeros(N,1),ones(N,1),C2/N;zeros(N,2),C3];
 M=M3*C;
 
 end
@@ -228,8 +227,8 @@ z3(N+1)=z(2);
 z3(2*N+1)=z(3);
 for i=2:N
     z3(2*N+i)=z3(2*N+i-1)+z(i+2);
-    z3(i)=z3(i-1)+cos(z3(2*N+i-1));
-    z3(N+i)=z3(N+i-1)+sin(z3(2*N+i-1));
+    z3(i)=z3(i-1)+cos(z3(2*N+i-1))/N;
+    z3(N+i)=z3(N+i-1)+sin(z3(2*N+i-1))/N;
 end
 
 M3=matrix3Nparameters(t,z3,N);
@@ -282,8 +281,8 @@ for i=1:N
     F(1,N+i)=-(gamma-1)*u*v;
     F(2,i)=-(gamma-1)*u*v;
     F(2,N+i)=-(u^2+gamma*v^2);
-    F(1,2*N+i)=1/2*v;
-    F(2,2*N+i)=-1/2*u;
+    F(1,2*N+i)=1/2*v/N;
+    F(2,2*N+i)=-1/2*u/N;
 end
 
 F=Sp^3*F;
@@ -294,15 +293,15 @@ for i=1:N
         v=sin(th(j));
         A=(x(j)-x(i));
         B=(y(j)-y(i));
-        T(i,j)=1/2*v+...
+        T(i,j)=1/2*v/N+...
             A*(-gamma+1)*v*u+...
             B*(gamma*u*u+v*v);
-        T(i,N+j)=-1/2*u+...
+        T(i,N+j)=-1/2*u/N+...
             B*(gamma-1)*v*u-...
             A*(u*u+gamma*v*v);
-        T(i,2*N+j)=-1/3-...
-            1/2*A*u...
-            -1/2*B*v;
+        T(i,2*N+j)=-1/3/N/N-...
+            1/2*A*u/N...
+            -1/2*B*v/N;
     end
 end
 
@@ -329,15 +328,13 @@ Y(1)=z(2);
 TH(1)=z(3);
 
 for i=2:N
-    X(i)=X(i-1)+cos(TH(i-1));
-    Y(i)=Y(i-1)+sin(TH(i-1));
+    X(i)=X(i-1)+cos(TH(i-1))/N;
+    Y(i)=Y(i-1)+sin(TH(i-1))/N;
     TH(i)=TH(i-1)+z(i+2);
 end
 
-X(N+1)=X(N)+cos(TH(N));
-Y(N+1)=Y(N)+sin(TH(N));
-X=X/N;
-Y=Y/N;
+X(N+1)=X(N)+cos(TH(N))/N;
+Y(N+1)=Y(N)+sin(TH(N))/N;
 
 end
 
