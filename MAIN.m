@@ -249,7 +249,7 @@ for i=N:-1:3
         C2(i,j)=C2(i,j+1)+cos(z3(2*N+j));
     end
 end
-C=[ones(N,1),zeros(N,1),C1;zeros(N,1),ones(N,1),C2;zeros(N,2),C3];
+C=[ones(N,1),zeros(N,1),C1/N;zeros(N,1),ones(N,1),C2/N;zeros(N,2),C3];
 M=M3(1:N+2,:)*C;
 
 % --- this is where the first two equations are being changed to 
@@ -285,7 +285,7 @@ for i=1:N
     F(2,2*N+i)=-1/2*u/N;
 end
 
-F=Sp^3*F;
+F=Sp^4*F/N;
 
 for i=1:N
     for j=i:N
@@ -305,7 +305,7 @@ for i=1:N
     end
 end
 
-T=Sp^3*T;
+T=Sp^4*T/N;
 
 M=[F;T];
 end
